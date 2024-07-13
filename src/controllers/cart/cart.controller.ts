@@ -21,22 +21,19 @@ export class CartController {
   constructor(private cartUseCases: CartUseCases) { }
 
   @Post()
-  // @MessagePattern({ cmd: 'create_cart' })
   async createCart(): Promise<Cart> {
     this.logger.log(`createCart() - Start`);
     return this.cartUseCases.createCart();
   }
 
   @Get()
-  // @MessagePattern({ cmd: 'get_carts' })
   async getAllCarts() {
     this.logger.log(`getAllCarts() - Start`);
     return await this.cartUseCases.getAllCarts();
   }
 
   @Get('/id/:cartId')
-  // @MessagePattern({ cmd: 'get' })
-  async getCartById(cartId: string): Promise<Cart> {
+  async getCartById(@Param('cartId') cartId: string): Promise<Cart> {
     this.logger.log(`getCartById(string) - Start`);
     return this.cartUseCases.getCartById(cartId);
   }
@@ -54,8 +51,7 @@ export class CartController {
     @Param('transactionId') transactionId: string,
   ): Promise<Cart> {
     this.logger.log(`addPaymentTransactionToCart(string, string) - Start`);
-    //return this.cartUseCases.addPaymentTransactionToCart(cartId, transactionId);
-    throw new NotImplementedException("CORRIGIR!!!");
+    return this.cartUseCases.addPaymentTransactionToCart(cartId, transactionId);
   }
 
   @Put('/:cartId/customers/:customerId')
@@ -64,7 +60,6 @@ export class CartController {
     @Param('customerId') customerId: string,
   ): Promise<Cart> {
     this.logger.log(`addCustomerToCart(string, string) - Start`);
-    //return this.cartUseCases.addCustomerToCart(cartId, customerId);
-    throw new NotImplementedException("CORRIGIR!!!");
+    return this.cartUseCases.addCustomerToCart(cartId, customerId);
   }
 }

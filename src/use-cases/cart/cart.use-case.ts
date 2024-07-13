@@ -6,6 +6,8 @@ import { CartAddProductDTO } from "src/dto/cart-add-product.dto";
 import { Product } from "src/frameworks/data-services/mongo/entities/product.model";
 import { HttpService } from "@nestjs/axios";
 import { AxiosResponse } from "axios";
+import { Transaction } from "src/frameworks/data-services/mongo/entities/transaction.model";
+import { Customer } from "src/frameworks/data-services/mongo/entities/customer.model";
 
 @Injectable()
 export class CartUseCases {
@@ -41,7 +43,12 @@ export class CartUseCases {
         }
     }
 
-    getExternalProduct(productId: string): Promise<AxiosResponse<Product>> {
+    /**
+     * Access external product microservice to get an existent product
+     * @param productId product id
+     * @returns Product
+     */
+    getProduct(productId: string): Promise<AxiosResponse<Product>> {
         const localURL = `http://0.0.0.0:3000/products/id/${productId}`;
         const containerURL = `http://product_ms:3000/products/id/${productId}`;
 
@@ -53,9 +60,43 @@ export class CartUseCases {
             });
     }
 
+    /**
+     * Access external payment microservice to get an existent transaction by id
+     * @param transactionId transaction id
+     * @returns Transaction
+     */
+    getTransaction(transactionId: string): Promise<AxiosResponse<Transaction>> {
+        const localURL = `http://0.0.0.0:3003/transactions/${transactionId}`;
+        const containerURL = `http://payment_ms:3003/transactions/${transactionId}`;
+
+        return this.httpService.
+            axiosRef.get(localURL)
+            .catch(() => {
+                return this.httpService.
+                    axiosRef.get(containerURL)
+            });
+    }
+
+    /**
+     * Access external customer microservice to get an existent transaction by id
+     * @param customerId customer id
+     * @returns Customer
+     */
+    getCustomer(customerId: string): Promise<AxiosResponse<Customer>> {
+        const localURL = `http://0.0.0.0:3004/customers/id/${customerId}`;
+        const containerURL = `http://customer_ms:3004/customers/id/${customerId}`;
+
+        return this.httpService.
+            axiosRef.get(localURL)
+            .catch(() => {
+                return this.httpService.
+                    axiosRef.get(containerURL)
+            });
+    }
+
     async addProductToCart(cartId: string, productId: string, quantity: CartAddProductDTO): Promise<Cart> {
         const foundCart = await this.getCartById(cartId);
-        const response = await this.getExternalProduct(productId);
+        const response = await this.getProduct(productId);
         const foundProduct = response.data;
 
         foundProduct.quantity = quantity.quantity;
@@ -65,21 +106,23 @@ export class CartUseCases {
         return this.dataServices.carts.update(cartId, foundCart);
     }
 
-    // async addPaymentTransactionToCart(cartId: string, transactionId: string): Promise<Cart> {
-    //     const foundCart = await this.getCartById(cartId);
-    //     const foundTransaction = await this.dataServices.transactions.get(transactionId); // Chamar outro microserviço
-    //     foundCart.paymentTransaction = foundTransaction;
+    async addPaymentTransactionToCart(cartId: string, transactionId: string): Promise<Cart> {
+        const foundCart = await this.getCartById(cartId);
+        const response = await this.getTransaction(transactionId);
+        const foundTransaction = response.data;
+        foundCart.paymentTransaction = foundTransaction;
 
-    //     return this.dataServices.carts.update(cartId, foundCart);
-    // }
+        return this.dataServices.carts.update(cartId, foundCart);
+    }
 
-    // async addCustomerToCart(cartId: string, customerId: string): Promise<Cart> {
-    //     const foundCart = await this.getCartById(cartId);
-    //     const foundCustomer = await this.dataServices.customers.get(customerId); // Chamar outro microserviço
-    //     foundCart.customer = foundCustomer;
+    async addCustomerToCart(cartId: string, customerId: string): Promise<Cart> {
+        const foundCart = await this.getCartById(cartId);
+        const response = await this.getCustomer(customerId);
+        const foundCustomer = response.data;
+        foundCart.customer = foundCustomer;
 
-    //     return this.dataServices.carts.update(cartId, foundCart);
-    // }
+        return this.dataServices.carts.update(cartId, foundCart);
+    }
 
     private validateProductQuantity(selectedCart: Cart, selectedProduct: Product): void {
         selectedCart.products
@@ -87,9 +130,7 @@ export class CartUseCases {
             .map((filteredProduct) => filteredProduct.quantity += filteredProduct.quantity);
 
         if (!selectedCart.products.find((product) => product.sku === selectedProduct.sku)) {
-            console.log(`Produto não encontrado no carrinho: `, selectedCart);
             selectedCart.products.push(selectedProduct);
-            console.log(`Produto adicionado ao carrinho: `, selectedCart);
         }
     }
 
