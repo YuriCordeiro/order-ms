@@ -9,7 +9,7 @@ import {
   Put,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { Cart } from '../../frameworks/data-services/mongo/entities/cart.model';
+import { Cart } from '../frameworks/data-services/mongo/entities/cart.model';
 import { CartUseCases } from 'src/use-cases/cart/cart.use-case';
 import { CartAddProductDTO } from 'src/dto/cart-add-product.dto';
 

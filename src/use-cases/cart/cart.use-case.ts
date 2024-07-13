@@ -4,18 +4,18 @@ import { Cart } from "src/frameworks/data-services/mongo/entities/cart.model";
 import { CartFactoryService } from "./cart-factory.service";
 import { CartAddProductDTO } from "src/dto/cart-add-product.dto";
 import { Product } from "src/frameworks/data-services/mongo/entities/product.model";
-import { HttpService } from "@nestjs/axios";
-import { AxiosResponse } from "axios";
-import { Transaction } from "src/frameworks/data-services/mongo/entities/transaction.model";
-import { Customer } from "src/frameworks/data-services/mongo/entities/customer.model";
+import { ProductPort as IProductPort, IProductPortToken } from "src/frameworks/api-services/http/ports/product.port";
+import { CustomerPort as ICustomerPort, ICustomerPortToken } from "src/frameworks/api-services/http/ports/customer.port";
+import { TransactionPort as ITransactionPort, ITransactionPortToken } from "src/frameworks/api-services/http/ports/transaction.port";
 
 @Injectable()
 export class CartUseCases {
 
-    // constructor(private dataServices: IDataServices, private cartFactoryService: CartFactoryService, private productUseCase: ProductUseCases) { }
-    // constructor(private dataServices: IDataServices, private cartFactoryService: CartFactoryService,
-    //     @Inject('PRODUCTS_SERVICE') private client: ClientProxy) { }
-    constructor(private dataServices: IDataServices, private cartFactoryService: CartFactoryService, private readonly httpService: HttpService) { }
+    constructor(private dataServices: IDataServices,
+        private cartFactoryService: CartFactoryService,
+        @Inject(IProductPortToken) private productClient: IProductPort,
+        @Inject(ICustomerPortToken) private customerClient: ICustomerPort,
+        @Inject(ITransactionPortToken) private transactionClient: ITransactionPort) { }
 
     async getAllCarts(): Promise<Cart[]> {
         return this.dataServices.carts.getAll();
@@ -43,60 +43,9 @@ export class CartUseCases {
         }
     }
 
-    /**
-     * Access external product microservice to get an existent product
-     * @param productId product id
-     * @returns Product
-     */
-    getProduct(productId: string): Promise<AxiosResponse<Product>> {
-        const localURL = `http://0.0.0.0:3000/products/id/${productId}`;
-        const containerURL = `http://product_ms:3000/products/id/${productId}`;
-
-        return this.httpService.
-            axiosRef.get(localURL)
-            .catch(() => {
-                return this.httpService.
-                    axiosRef.get(containerURL)
-            });
-    }
-
-    /**
-     * Access external payment microservice to get an existent transaction by id
-     * @param transactionId transaction id
-     * @returns Transaction
-     */
-    getTransaction(transactionId: string): Promise<AxiosResponse<Transaction>> {
-        const localURL = `http://0.0.0.0:3003/transactions/${transactionId}`;
-        const containerURL = `http://payment_ms:3003/transactions/${transactionId}`;
-
-        return this.httpService.
-            axiosRef.get(localURL)
-            .catch(() => {
-                return this.httpService.
-                    axiosRef.get(containerURL)
-            });
-    }
-
-    /**
-     * Access external customer microservice to get an existent transaction by id
-     * @param customerId customer id
-     * @returns Customer
-     */
-    getCustomer(customerId: string): Promise<AxiosResponse<Customer>> {
-        const localURL = `http://0.0.0.0:3004/customers/id/${customerId}`;
-        const containerURL = `http://customer_ms:3004/customers/id/${customerId}`;
-
-        return this.httpService.
-            axiosRef.get(localURL)
-            .catch(() => {
-                return this.httpService.
-                    axiosRef.get(containerURL)
-            });
-    }
-
     async addProductToCart(cartId: string, productId: string, quantity: CartAddProductDTO): Promise<Cart> {
         const foundCart = await this.getCartById(cartId);
-        const response = await this.getProduct(productId);
+        const response = await this.productClient.getProductById(productId);
         const foundProduct = response.data;
 
         foundProduct.quantity = quantity.quantity;
@@ -108,7 +57,7 @@ export class CartUseCases {
 
     async addPaymentTransactionToCart(cartId: string, transactionId: string): Promise<Cart> {
         const foundCart = await this.getCartById(cartId);
-        const response = await this.getTransaction(transactionId);
+        const response = await this.transactionClient.getTransactionById(transactionId);
         const foundTransaction = response.data;
         foundCart.paymentTransaction = foundTransaction;
 
@@ -117,7 +66,7 @@ export class CartUseCases {
 
     async addCustomerToCart(cartId: string, customerId: string): Promise<Cart> {
         const foundCart = await this.getCartById(cartId);
-        const response = await this.getCustomer(customerId);
+        const response = await this.customerClient.getCustomerByID(customerId);
         const foundCustomer = response.data;
         foundCart.customer = foundCustomer;
 
