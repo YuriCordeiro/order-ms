@@ -30,9 +30,9 @@ export class OrderUseCases {
       );
   }
 
-  getOrderById(id: string): Promise<Order> {
+  async getOrderById(id: string): Promise<Order> {
     if (id.match(/^[0-9a-fA-F]{24}$/)) {
-      const orderProduct = this.dataServices.orders.get(id);
+      const orderProduct = await this.dataServices.orders.get(id);
 
       if (orderProduct != null) {
         return orderProduct;
@@ -91,8 +91,8 @@ export class OrderUseCases {
     return this.dataServices.orders.update(payload.orderId, foundOrder);
   }
 
-  deleteOrder(orderId: string) {
-    const foundOrder = this.getOrderById(orderId);
+  async deleteOrder(orderId: string) {
+    const foundOrder = await this.getOrderById(orderId);
     this.dataServices.orders.delete(orderId);
   }
 

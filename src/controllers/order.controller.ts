@@ -38,7 +38,7 @@ import {
     @Get('/id/:orderId')
     async getOrderById(@Param('orderId') orderId: string): Promise<Order> {
       this.logger.log(`getOrderById(string) - Start`);
-      return this.orderUseCases.getOrderById(orderId);
+      return await this.orderUseCases.getOrderById(orderId);
     }
   
     @Get('/status/:status')
