@@ -1,11 +1,11 @@
 import { HttpService } from "@nestjs/axios";
-import { ProductPort } from "../ports/product.port";
+import { IProductPort } from "../ports/product.port";
 import { AxiosResponse } from "axios";
 import { Product } from "src/frameworks/data-services/mongo/entities/product.model";
 import { Injectable } from "@nestjs/common";
 
 @Injectable()
-export class ProductAdapter implements ProductPort {
+export class ProductAdapter implements IProductPort {
 
     constructor(private readonly httpService: HttpService) { }
     getProductById(productId: string): Promise<AxiosResponse<Product>> {

@@ -1,7 +1,7 @@
 import { AxiosResponse } from "axios";
 import { Transaction } from "src/frameworks/data-services/mongo/entities/transaction.model";
 
-export interface TransactionPort {
+export interface ITransactionPort {
 
     getTransactionById(transactionId: string): Promise<AxiosResponse<Transaction>>;
 }

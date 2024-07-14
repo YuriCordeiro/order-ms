@@ -1,9 +1,11 @@
 import { Transaction } from "src/frameworks/data-services/mongo/entities/transaction.model";
-import { TransactionPort } from "../ports/transaction.port";
+import { ITransactionPort } from "../ports/transaction.port";
 import { AxiosResponse } from "axios";
 import { HttpService } from "@nestjs/axios";
+import { Injectable } from "@nestjs/common";
 
-export class TransactionAdapter implements TransactionPort {
+@Injectable()
+export class TransactionAdapter implements ITransactionPort {
 
     constructor(private readonly httpService: HttpService) { }
 

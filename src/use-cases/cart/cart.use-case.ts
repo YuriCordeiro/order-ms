@@ -4,9 +4,9 @@ import { Cart } from "src/frameworks/data-services/mongo/entities/cart.model";
 import { CartFactoryService } from "./cart-factory.service";
 import { CartAddProductDTO } from "src/dto/cart-add-product.dto";
 import { Product } from "src/frameworks/data-services/mongo/entities/product.model";
-import { ProductPort as IProductPort, IProductPortToken } from "src/frameworks/api-services/http/ports/product.port";
-import { CustomerPort as ICustomerPort, ICustomerPortToken } from "src/frameworks/api-services/http/ports/customer.port";
-import { TransactionPort as ITransactionPort, ITransactionPortToken } from "src/frameworks/api-services/http/ports/transaction.port";
+import { IProductPort as IProductPort, IProductPortToken } from "src/frameworks/api-services/http/ports/product.port";
+import { ICustomerPort as ICustomerPort, ICustomerPortToken } from "src/frameworks/api-services/http/ports/customer.port";
+import { ITransactionPort as ITransactionPort, ITransactionPortToken } from "src/frameworks/api-services/http/ports/transaction.port";
 
 @Injectable()
 export class CartUseCases {

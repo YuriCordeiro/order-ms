@@ -1,9 +1,11 @@
 import { Customer } from "src/frameworks/data-services/mongo/entities/customer.model";
-import { CustomerPort } from "../ports/customer.port";
+import { ICustomerPort } from "../ports/customer.port";
 import { HttpService } from "@nestjs/axios";
 import { AxiosResponse } from "axios";
+import { Injectable } from "@nestjs/common";
 
-export class CustomerAdapter implements CustomerPort {
+@Injectable()
+export class CustomerAdapter implements ICustomerPort {
 
     constructor(private readonly httpService: HttpService) { }
 
