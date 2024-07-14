@@ -26,7 +26,7 @@ import {
     @Post('/cart/:cartId')
     async createOrder(@Param('cartId') cartId: string): Promise<Order> {
       this.logger.log(`createOrder() - Start`);
-      return this.orderUseCases.createOrder(cartId);
+      return await this.orderUseCases.createOrder(cartId);
     }
   
     @Get()
@@ -44,7 +44,7 @@ import {
     @Get('/status/:status')
     async getOrderByStatus(@Param('status') status: string): Promise<Order[]> {
       this.logger.log(`getOrderByStatus(string) - Start`);
-      return this.orderUseCases.getOrderByStatus(status);
+      return await this.orderUseCases.getOrderByStatus(status);
     }
   
     @Put('/:orderId')
@@ -53,7 +53,7 @@ import {
       @Body() orderDTO: OrderDTO,
     ): Promise<Order> {
       this.logger.log(`updateOrder(string, OrderDTO) - Start`);
-      return this.orderUseCases.updateOrder(orderId, orderDTO);
+      return await this.orderUseCases.updateOrder(orderId, orderDTO);
     }
   
     @Put('/:orderId/status')
@@ -62,14 +62,14 @@ import {
       @Body() putOrderStatusDTO: PutOrderStatusDTO,
     ): Promise<Order> {
       this.logger.log(`updateStatus(string, OrderDTO) - Start`);
-      return this.orderUseCases.updateStatus(orderId, putOrderStatusDTO);
+      return await this.orderUseCases.updateStatus(orderId, putOrderStatusDTO);
     }
   
     @HttpCode(HttpStatus.NO_CONTENT)
     @Delete('/:orderId')
     async deleteOrder(@Param('orderId') orderId: string): Promise<void> {
       this.logger.log(`deleteOrder(String) - Start`);
-      return this.orderUseCases.deleteOrder(orderId);
+      return await this.orderUseCases.deleteOrder(orderId);
     }
   }
   

@@ -35,14 +35,14 @@ export class CartController {
   @Get('/id/:cartId')
   async getCartById(@Param('cartId') cartId: string): Promise<Cart> {
     this.logger.log(`getCartById(string) - Start`);
-    return this.cartUseCases.getCartById(cartId);
+    return await this.cartUseCases.getCartById(cartId);
   }
 
   @Put('/:cartId/products/:productId')
   async addProductToCart(@Param('cartId') cartId: string,
     @Param('productId') productId: string,
     @Body() cartAddProductDTO: CartAddProductDTO): Promise<Cart> {
-    return this.cartUseCases.addProductToCart(cartId, productId, cartAddProductDTO);
+    return await this.cartUseCases.addProductToCart(cartId, productId, cartAddProductDTO);
   }
 
   @Put('/:cartId/transactions/:transactionId')
@@ -51,7 +51,7 @@ export class CartController {
     @Param('transactionId') transactionId: string,
   ): Promise<Cart> {
     this.logger.log(`addPaymentTransactionToCart(string, string) - Start`);
-    return this.cartUseCases.addPaymentTransactionToCart(cartId, transactionId);
+    return await this.cartUseCases.addPaymentTransactionToCart(cartId, transactionId);
   }
 
   @Put('/:cartId/customers/:customerId')
@@ -60,6 +60,6 @@ export class CartController {
     @Param('customerId') customerId: string,
   ): Promise<Cart> {
     this.logger.log(`addCustomerToCart(string, string) - Start`);
-    return this.cartUseCases.addCustomerToCart(cartId, customerId);
+    return await this.cartUseCases.addCustomerToCart(cartId, customerId);
   }
 }
