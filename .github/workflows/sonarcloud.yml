@@ -36,8 +36,8 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            -Dsonar.projectKey=Jeansss_payment-ms
-            -Dsonar.organization=jeansss
+            -Dsonar.projectKey=YuriCordeiro_order-ms
+            -Dsonar.organization=yuricordeiro
             -Dsonar.sources=./src
             -Dsonar.tests=./test
             -Dsonar.test.inclusions="**/*.spec.ts"
