@@ -1,21 +1,11 @@
-//import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { blob } from "aws-sdk/clients/codecommit";
 
-//export type ProductDocument = Product & Document;
-
-//@Schema()
 export class Product {
-  //@Prop()
   name: string;
-  //@Prop()
   sku: string;
-  //@Prop()
   category: string;
-  //@Prop()
+  // image: blob;
   value: number;
-  //@Prop()
   quantity: number;
-  //@Prop()
   description: string;
 }
-
-//export const ProductSchema = SchemaFactory.createForClass(Product);

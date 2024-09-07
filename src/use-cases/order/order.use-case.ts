@@ -9,13 +9,15 @@ import { OrderDTO } from 'src/dto/order.dto';
 import { Order } from 'src/frameworks/data-services/mongo/entities/order.model';
 import { PutOrderStatusDTO } from 'src/dto/put-order-status.dto';
 import { WebhookDTO } from 'src/dto/webhook-transaction.dto';
+import { JOB_TYPES, SQSProducerService } from 'src/frameworks/messaging-services/sqs-messaging-services.service';
 
 @Injectable()
 export class OrderUseCases {
 
   constructor(
     private dataServices: IDataServices,
-    private orderFactoryService: OrderFactoryService
+    private orderFactoryService: OrderFactoryService,
+    private sqsProducerService: SQSProducerService
   ) { }
 
   /**
@@ -66,7 +68,12 @@ export class OrderUseCases {
 
   async createOrder(cartId: string): Promise<Order> {
     const newOrder = this.orderFactoryService.createNewOrder(cartId, await this.mapActualQueuePosition());
-    return this.dataServices.orders.create(await newOrder);
+    const createdOrder = this.dataServices.orders.create(await newOrder);
+
+    // Send list of products
+    this.sqsProducerService.send((await createdOrder).products, JOB_TYPES.NEW_ORDER);
+
+    return createdOrder;
   }
 
   async mapActualQueuePosition() {
