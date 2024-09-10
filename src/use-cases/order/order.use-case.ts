@@ -67,11 +67,16 @@ export class OrderUseCases {
   }
 
   async createOrder(cartId: string): Promise<Order> {
-    const newOrder = this.orderFactoryService.createNewOrder(cartId, await this.mapActualQueuePosition());
-    const createdOrder = this.dataServices.orders.create(await newOrder);
+    const newOrder = await this.orderFactoryService.createNewOrder(cartId, await this.mapActualQueuePosition());
+    const createdOrder = await this.dataServices.orders.create(newOrder);
 
-    // Send list of products
-    this.sqsProducerService.send((await createdOrder).products, JOB_TYPES.NEW_ORDER);
+    const newOrderMessage = {
+      orderId: createdOrder.id,
+      cartId: cartId,
+      products: createdOrder.products
+    }
+    
+    this.sqsProducerService.send(newOrderMessage, JOB_TYPES.NEW_ORDER);
 
     return createdOrder;
   }

@@ -7,6 +7,7 @@ export type OrderDocument = Order & Document;
 
 @Schema()
 export class Order {
+  id: string;
   @Prop()
   products: Product[];
   @Prop()
