@@ -43,6 +43,15 @@ export class CartUseCases {
         }
     }
 
+    async getCartByTransactionId(transactionId: string) {
+        const result = await this.dataServices.carts.getByTransationId(transactionId);
+        if(result != null) {
+            return result;
+        } else {
+            throw new NotFoundException(`No cart with transactionID: '${transactionId}' were found`);
+        }
+    }
+
     async addProductToCart(cartId: string, productId: string, quantity: CartAddProductDTO): Promise<Cart> {
         const foundCart = await this.getCartById(cartId);
         const response = await this.productClient.getProductById(productId);

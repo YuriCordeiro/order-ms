@@ -9,15 +9,20 @@ import { ICustomerPortToken } from "src/frameworks/api-services/http/ports/custo
 import { CustomerAdapter } from "src/frameworks/api-services/http/adapters/customer.adapter";
 import { ITransactionPortToken } from "src/frameworks/api-services/http/ports/transaction.port";
 import { TransactionAdapter } from "src/frameworks/api-services/http/adapters/transaction.adapter";
+import { MessageHandler } from "src/frameworks/messaging-services/sqs-message-handler";
+import { OrderUseCases } from "../order/order.use-case";
+import { OrderFactoryService } from "../order/order-factory.service";
+import { SQSProducerService } from "src/frameworks/messaging-services/sqs-messaging-services.service";
 
 @Module({
-    imports: [DataServicesModule, HttpModule,],
-    providers: [CartFactoryService, CartUseCases,
+    imports: [DataServicesModule, HttpModule],
+    providers: [CartFactoryService, CartUseCases, OrderUseCases, OrderFactoryService, SQSProducerService,
         { provide: IProductPortToken, useClass: ProductAdapter },
         { provide: ICustomerPortToken, useClass: CustomerAdapter },
-        { provide: ITransactionPortToken, useClass: TransactionAdapter }
+        { provide: ITransactionPortToken, useClass: TransactionAdapter },
+        MessageHandler
     ],
-    exports: [CartFactoryService, CartUseCases]
+    exports: [CartFactoryService, CartUseCases, MessageHandler, OrderUseCases, OrderFactoryService, SQSProducerService]
 })
 export class CartUseCaseModule {
 };

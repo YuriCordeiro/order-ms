@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, InternalServerErrorException } from "@nestjs/common";
-import {SQS} from "aws-sdk";
+import { SQS } from "@aws-sdk/client-sqs";
 import { v4 as uuidv4 } from 'uuid';
 
 export interface SQSMessage {
@@ -46,7 +46,7 @@ export class SQSProducerService {
 
     const messageId = uuidv4();
     let sqsMessage: SQSMessage = {
-      QueueUrl: process.env.SQS_URL,
+      QueueUrl: process.env.SQS_NEW_ORDER_URL,
       MessageBody: JSON.stringify({
         messageId,
         message,
@@ -64,16 +64,14 @@ export class SQSProducerService {
       credentials: {
         accessKeyId: accessKeyId,
         secretAccessKey: secretAccessKey
-      }
+      },
     });
-
-    console.log('sqsMessage:', sqsMessage);
 
     sqs.sendMessage(sqsMessage, function (err, data) {
       if (err) {
         console.log("Error", err);
       } else {
-        console.log("Success", data.MessageId);
+        console.log(`Success, data: ${data.MessageBody} has been sent with ID: ${data.MessageId}`);
       }
     });
   }

@@ -31,6 +31,11 @@ export class CartController {
     this.logger.log(`getAllCarts() - Start`);
     return await this.cartUseCases.getAllCarts();
   }
+  @Get('/teste/:transactionId')
+  async teste(@Param('transactionId') transactionId: string) {
+    this.logger.log(`teste(string) - Start`);
+    return await this.cartUseCases.getCartByTransactionId(transactionId);
+  }
 
   @Get('/id/:cartId')
   async getCartById(@Param('cartId') cartId: string): Promise<Cart> {
