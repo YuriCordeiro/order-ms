@@ -2,7 +2,7 @@ import { Transaction } from "src/frameworks/data-services/mongo/entities/transac
 import { ITransactionPort } from "../ports/transaction.port";
 import { AxiosResponse } from "axios";
 import { HttpService } from "@nestjs/axios";
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 
 @Injectable()
 export class TransactionAdapter implements ITransactionPort {
@@ -12,11 +12,28 @@ export class TransactionAdapter implements ITransactionPort {
     getTransactionById(transactionId: string): Promise<AxiosResponse<Transaction>> {
         // const localURL = `http://0.0.0.0:3003/transactions/${transactionId}`;
         // const containerURL = `http://payment_ms:3003/transactions/${transactionId}`;
-
-        const finalUrl = `http://af2656d4febb4451d86617b0e544401e-1306484774.us-east-1.elb.amazonaws.com/carts/id/${transactionId}`;
-
-        return this.httpService.
-            axiosRef.get(finalUrl);
+        
+        const finalUrl = `http://a09e298b2622f46f087249577a5880dc-1516096623.us-east-1.elb.amazonaws.com/transactions/${transactionId}`;
+        
+        return this.httpService.axiosRef.get(finalUrl, {
+            headers: { 'Content-Type': 'application/json' },
+            proxy: false
+        })
+        .then((response) => {
+            Logger.log(`Response from ${finalUrl}`);
+            Logger.log(response.data);
+            return response;
+        })
+        .catch((error) => {
+            Logger.error(`Error from ${finalUrl}`);
+            if (error.response) {
+                Logger.error(`Error status: ${error.response.status}`);
+                Logger.error(`Error data: ${JSON.stringify(error.response.data)}`);
+            } else {
+                Logger.error(`Error message: ${error.message}`);
+            }
+            return null;
+        });
     }
 
 }
