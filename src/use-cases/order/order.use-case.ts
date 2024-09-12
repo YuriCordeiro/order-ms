@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { IDataServices } from 'src/core/abstracts/data-services.abstract';
@@ -8,14 +9,17 @@ import { OrderFactoryService } from './order-factory.service';
 import { OrderDTO } from 'src/dto/order.dto';
 import { Order } from 'src/frameworks/data-services/mongo/entities/order.model';
 import { PutOrderStatusDTO } from 'src/dto/put-order-status.dto';
-import { WebhookDTO } from 'src/dto/webhook-transaction.dto';
+import { JOB_TYPES, SQSProducerService } from 'src/frameworks/messaging-services/sqs-messaging-services.service';
 
 @Injectable()
 export class OrderUseCases {
 
+  private readonly logger = new Logger(OrderUseCases.name);
+
   constructor(
     private dataServices: IDataServices,
-    private orderFactoryService: OrderFactoryService
+    private orderFactoryService: OrderFactoryService,
+    private sqsProducerService: SQSProducerService
   ) { }
 
   /**
@@ -65,8 +69,19 @@ export class OrderUseCases {
   }
 
   async createOrder(cartId: string): Promise<Order> {
-    const newOrder = this.orderFactoryService.createNewOrder(cartId, await this.mapActualQueuePosition());
-    return this.dataServices.orders.create(await newOrder);
+    this.logger.log(`createOrder(cartId) - CartId received: ${cartId}`);
+    const newOrder = await this.orderFactoryService.createNewOrder(cartId, await this.mapActualQueuePosition());
+    const createdOrder = await this.dataServices.orders.create(newOrder);
+
+    const newOrderMessage = {
+      orderId: createdOrder.id,
+      cartId: cartId,
+      products: createdOrder.products
+    }
+    
+    this.sqsProducerService.send(newOrderMessage, JOB_TYPES.NEW_ORDER);
+
+    return createdOrder;
   }
 
   async mapActualQueuePosition() {
@@ -85,11 +100,11 @@ export class OrderUseCases {
     return this.dataServices.orders.update(orderId, foundOrder);
   }
 
-  async updateOrderTransactionStatus(payload: WebhookDTO): Promise<Order> {
-    const foundOrder = await this.getOrderById(payload.orderId);
-    foundOrder.paymentTransaction.status = payload.status;
-    return this.dataServices.orders.update(payload.orderId, foundOrder);
-  }
+  // async updateOrderTransactionStatus(payload: WebhookDTO): Promise<Order> {
+  //   const foundOrder = await this.getOrderById(payload.orderId);
+  //   foundOrder.paymentTransaction.status = payload.status;
+  //   return this.dataServices.orders.update(payload.transactionId, foundOrder);
+  // }
 
   async deleteOrder(orderId: string) {
     const foundOrder = await this.getOrderById(orderId);

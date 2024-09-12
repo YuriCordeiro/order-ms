@@ -6,7 +6,7 @@ import { Order } from 'src/frameworks/data-services/mongo/entities/order.model';
 import { OrderDTO } from 'src/dto/order.dto';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { PutOrderStatusDTO } from 'src/dto/put-order-status.dto';
-import { WebhookDTO } from 'src/dto/webhook-transaction.dto';
+import { WebhookMessageDTO } from 'src/dto/webhook-transaction.dto';
 import { CustomerDTO } from 'src/dto/customer.dto';
 
 const mockDataServices = () => ({
@@ -158,7 +158,7 @@ describe('OrderUseCases', () => {
 
   describe('updateOrderTransactionStatus', () => {
     it('should update the order transaction status', async () => {
-      const payload: WebhookDTO = {
+      const payload: WebhookMessageDTO = {
         orderId: '123456789012345678901234', status: 'completed',
         transactionId: ''
       };

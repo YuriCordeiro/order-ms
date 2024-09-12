@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { ObjectId } from 'mongoose';
 
-export class WebhookDTO {
+export class WebhookMessageDTO {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
@@ -10,10 +11,5 @@ export class WebhookDTO {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  readonly transactionId: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  readonly orderId: string;
+  readonly _id: string; // transactionID
 }

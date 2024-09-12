@@ -7,12 +7,14 @@ import { MongoGenericRepository } from './external/mongo-generic-repository';
 import { OrderRepositoryImpl } from './gateways/order.repository';
 import { Order, OrderDocument } from './entities/order.model';
 import { Cart, CartDocument } from './entities/cart.model';
+import { CartRepositoryImpl } from './gateways/cart.repository';
 
 @Injectable()
 export class MongoDataServices
   implements IDataServices, OnApplicationBootstrap {
   orders: OrderRepositoryImpl;
-  carts: IGenericRepository<Cart>;
+  carts: CartRepositoryImpl;
+  // carts: IGenericRepository<Cart>;
 
   constructor(
     @InjectModel(Order.name)
@@ -23,6 +25,6 @@ export class MongoDataServices
 
   onApplicationBootstrap() {
     this.orders = new OrderRepositoryImpl(this.OrderRepository);
-    this.carts = new MongoGenericRepository(this.CartRepository);
+    this.carts = new CartRepositoryImpl(this.CartRepository);
   }
 }
