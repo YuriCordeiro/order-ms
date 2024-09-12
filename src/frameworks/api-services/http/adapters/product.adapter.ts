@@ -9,10 +9,7 @@ export class ProductAdapter implements IProductPort {
 
     constructor(private readonly httpService: HttpService) { }
     getProductById(productId: string): Promise<AxiosResponse<Product>> {
-        // const localURL = `http://0.0.0.0:3000/products/id/${productId}`;
-        // const containerURL = `http://product_ms:3000/products/id/${productId}`;
-
-        const finalUrl = `http://a381c6854c88c4b7193f320045e90215-127696975.us-east-1.elb.amazonaws.com/products/id/${productId}`;
+        const finalUrl = `http://ad0c9e21ad37e4a10b59821579d5fd35-257402751.us-east-1.elb.amazonaws.com/products/id/${productId}`;
 
         return this.httpService.axiosRef.get(finalUrl, {
             headers: { 'Content-Type': 'application/json' },
@@ -36,9 +33,7 @@ export class ProductAdapter implements IProductPort {
     }
 
     getProductBySKU(productSKU: string) {
-        // const localURL = `http://0.0.0.0:3000/product/sku/${productSKU}`;
-        // const containerURL = `http://customer_ms:3000/product/sku/${productSKU}`;
-        const finalUrl = `http://a381c6854c88c4b7193f320045e90215-127696975.us-east-1.elb.amazonaws.com/product/sku/${productSKU}`;
+        const finalUrl = `http://ad0c9e21ad37e4a10b59821579d5fd35-257402751.us-east-1.elb.amazonaws.com/product/sku/${productSKU}`;
 
         return this.httpService.axiosRef.get(finalUrl, {
             headers: { 'Content-Type': 'application/json' },
