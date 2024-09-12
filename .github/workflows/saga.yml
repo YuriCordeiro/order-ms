@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - feature/sqs
+      - master
   pull_request:
     branches:
       - master
