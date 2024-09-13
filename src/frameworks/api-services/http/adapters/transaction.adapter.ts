@@ -13,7 +13,7 @@ export class TransactionAdapter implements ITransactionPort {
         // const localURL = `http://0.0.0.0:3003/transactions/${transactionId}`;
         // const containerURL = `http://payment_ms:3003/transactions/${transactionId}`;
         
-        const finalUrl = `http://a09e298b2622f46f087249577a5880dc-1516096623.us-east-1.elb.amazonaws.com/transactions/${transactionId}`;
+        const finalUrl = `http://a182a7d14d5234bdc91b6be1016937b9-1733100013.us-east-1.elb.amazonaws.com/transactions/${transactionId}`;
         
         return this.httpService.axiosRef.get(finalUrl, {
             headers: { 'Content-Type': 'application/json' },
